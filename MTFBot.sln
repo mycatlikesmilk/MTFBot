@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTFBot", "MTFBot\MTFBot.csproj", "{1DA749A0-935E-4E66-94C7-6C951747C336}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTFBotPlugin", "MTFBotPlugin\MTFBotPlugin.csproj", "{109B2DEC-B7EA-4E46-8889-60C0909C4AAE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		SQL|Any CPU = SQL|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1DA749A0-935E-4E66-94C7-6C951747C336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DA749A0-935E-4E66-94C7-6C951747C336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DA749A0-935E-4E66-94C7-6C951747C336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DA749A0-935E-4E66-94C7-6C951747C336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DA749A0-935E-4E66-94C7-6C951747C336}.SQL|Any CPU.ActiveCfg = SQL|Any CPU
+		{1DA749A0-935E-4E66-94C7-6C951747C336}.SQL|Any CPU.Build.0 = SQL|Any CPU
+		{109B2DEC-B7EA-4E46-8889-60C0909C4AAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{109B2DEC-B7EA-4E46-8889-60C0909C4AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{109B2DEC-B7EA-4E46-8889-60C0909C4AAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{109B2DEC-B7EA-4E46-8889-60C0909C4AAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{109B2DEC-B7EA-4E46-8889-60C0909C4AAE}.SQL|Any CPU.ActiveCfg = SQL|Any CPU
+		{109B2DEC-B7EA-4E46-8889-60C0909C4AAE}.SQL|Any CPU.Build.0 = SQL|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A567D12-3DEB-4C66-AC38-57934A63AA5B}
+	EndGlobalSection
+EndGlobal
