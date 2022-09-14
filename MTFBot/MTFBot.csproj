@@ -15,8 +15,4 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.8" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Bot\" />
-  </ItemGroup>
-
 </Project>
