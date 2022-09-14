@@ -1,0 +1,8 @@
+.vs
+.git
+MTFBot/Config/debug.json
+MTFBot/Config/release.json
+MTFBot/bin/*
+MTFBot/obj/*
+MTFBotPlugin/bin/*
+MTFBotPlugin/obj/*
