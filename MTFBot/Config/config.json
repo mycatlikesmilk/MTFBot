@@ -1,5 +1,13 @@
 {
   "Server": {
-    "BotToken": ""
+    "BotToken": "",
+
+    "Roles": {
+      "Administration": 0,
+      "Moderation": 0,
+      "WhitelistAllower": 0,
+      "WhitelistAllowed": 0,
+      "WhitelistRestricted": 0
+    }
   }
 }

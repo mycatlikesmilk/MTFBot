@@ -15,4 +15,16 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Config\config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\debug.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
