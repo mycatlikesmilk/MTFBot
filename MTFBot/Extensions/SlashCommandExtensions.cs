@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
-namespace MTFBot.Bot
+namespace MTFBot.Extensions
 {
-    internal static class SlashCommandParser
+#line hidden
+    internal static class SlashCommandExtensions
     {
         public static SocketSlashCommandDataOption GetSubcommand(this SocketSlashCommand command)
         {
@@ -28,7 +29,7 @@ namespace MTFBot.Bot
             }
             catch
             {
-                return (T)defaultValue;
+                return defaultValue;
             }
         }
 
@@ -40,7 +41,7 @@ namespace MTFBot.Bot
             }
             catch
             {
-                return (T)defaultValue;
+                return defaultValue;
             }
         }
 
@@ -49,4 +50,5 @@ namespace MTFBot.Bot
             return command.User;
         }
     }
+#line default
 }

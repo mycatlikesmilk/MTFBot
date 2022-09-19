@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using MTFBot.DB;
+using MTFBot.Extensions;
 
 namespace MTFBot.Bot.Commands
 {
@@ -18,7 +20,7 @@ namespace MTFBot.Bot.Commands
                 .WithName(Name)
                 .WithDescription("Перепривязывает steamid к определенному пользователю дискорда")
                 .AddOption(new SlashCommandOptionBuilder()
-                    .WithName("user")
+                    .WithName("discord")
                     .WithDescription("Пользователь в дискорде")
                     .WithType(ApplicationCommandOptionType.User)
                     .WithRequired(true)
@@ -26,18 +28,39 @@ namespace MTFBot.Bot.Commands
                 .AddOption(new SlashCommandOptionBuilder()
                     .WithName("steamid")
                     .WithDescription("Steamid игрока")
-                    .WithType(ApplicationCommandOptionType.String)
+                    .WithType(ApplicationCommandOptionType.Integer)
                     .WithRequired(true)
                 ).Build());
         }
 
         public override async Task Execute(SocketSlashCommand command, SocketGuild guild)
         {
-            var triggeredUser = command.User;
-            var user = (SocketUser)command.Data.Options.First(x => x.Name == "user").Value;
-            var steamid = (string)command.Data.Options.First(x => x.Name == "steamid").Value;
+            var triggeredUser = command.GetTriggeredUser();
+            if (!CheckRoles(guild.GetUser(triggeredUser.Id)))
+                await command.RespondAsync(text: "У вас недостаточно прав для выполнения этой команды");
 
-            // TODO: relink in db
+            var user = command.GetCommandValue<SocketUser>("discord", null);
+            var steamid = (ulong)command.GetCommandValue<long>("steamid", 0);
+
+            var dbuser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == user.Id);
+            if (dbuser == null)
+            {
+                dbuser = Database.Context.Users.Add(new User(user.Id, steamid)).Entity;
+                await Database.Context.SaveChangesAsync();
+                await command.RespondAsync(text: $"Пользователь <@{user.Id}> не найден. Связь создана ({steamid})");
+                return;
+            }
+
+            dbuser.SteamId = steamid;
+            await Database.Context.SaveChangesAsync();
+            await command.RespondAsync(text: $"Перепривязка успешно выполнена (<@{user.Id}> {steamid})");
+        }
+
+        private bool CheckRoles(SocketGuildUser user)
+        {
+            return (user.HasRole(Global.Roles.Administration) ||
+                    user.HasRole(Global.Roles.Moderation) ||
+                    user.HasRole(Global.Roles.WhitelistAllower));
         }
     }
 }

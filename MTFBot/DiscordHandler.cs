@@ -19,11 +19,10 @@ namespace MTFBot
 
         public static async Task Initialize()
         {
-            Log.WriteLine("Инициализация данных о сервере");
             Commands = new Dictionary<string, BaseCommand>();
             Guild = Global.DiscordClient.Guilds.First();
             await RegisterCommands();
-            Log.WriteLine("Инициализация данных о сервере завершена", Log.LogLevel.SUCCES);
+            Log.WriteLine("Инициализация данных сервера завершена", Log.LogLevel.SUCCES);
         }
 
         public static async Task ExecuteCommand(string commandName, SocketSlashCommand command)

@@ -26,7 +26,6 @@ namespace MTFBot
         {
             Database.Stop();
             await MTFBot.Bot.Core.Stop();
-            Log.StopLog();
         }
     }
 }

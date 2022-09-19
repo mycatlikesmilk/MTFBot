@@ -34,8 +34,7 @@ namespace MTFBot.Bot.Commands
                         .AddOption(new SlashCommandOptionBuilder()
                             .WithName("steamid")
                             .WithDescription("Steamid игрока")
-                            .WithType(ApplicationCommandOptionType.Integer)
-                            .WithRequired(true))
+                            .WithType(ApplicationCommandOptionType.Integer))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("force")
                         .WithDescription("Дать доступ не смотря на запрет")
@@ -75,12 +74,22 @@ namespace MTFBot.Bot.Commands
             var subcommand = command.GetSubcommand();
 
             var discordUser = subcommand.GetCommandValue<SocketUser>("discord", null);
-            var steamId = subcommand.GetCommandValue<ulong>("steamid", 0);
+            var steamId = (ulong)subcommand.GetCommandValue<long>("steamid", 0);
             var forced = subcommand.GetCommandValue<bool>("force", false);
             var restriction = subcommand.GetCommandValue<bool>("restrict", true);
 
-            var dbUser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == discordUser.Id)
-                         ?? Database.Context.Users.Add(new User(discordUser.Id, steamId)).Entity;
+            var dbUser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == discordUser.Id);
+            if (dbUser == null)
+            {
+                if (steamId == 0)
+                {
+                    await command.RespondAsync(text: $"Пользователь <@{discordUser.Id}> не найден в базе данных. Укажите SteamID явно, чтобы добавить в базу данных и выдать доступ в Whitelist");
+                    return;
+                }
+                dbUser = Database.Context.Users.Add(new User(discordUser.Id, steamId)).Entity;
+            }
+
+            await Database.Context.SaveChangesAsync();
 
             switch (subcommand.Name)
             {

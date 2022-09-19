@@ -8,7 +8,7 @@ namespace MTFBot.DB
 {
     public static class Database
     {
-        public static UsersContext Context;
+        public static UsersContext Context { get; private set; }
 
         public static void Start()
         {

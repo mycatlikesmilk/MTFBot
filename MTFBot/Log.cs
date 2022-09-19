@@ -9,7 +9,6 @@ namespace MTFBot
     internal static class Log
     {
         private static string CurrentSessionFile;
-        private static StreamWriter writer;
 
         public enum LogLevel
         {
@@ -21,24 +20,13 @@ namespace MTFBot
             ERROR
         }
 
-        public static void StopLog()
-        {
-            if (writer != null)
-                writer.Close();
-        }
-
         public static void WriteLine(string message, LogLevel level = LogLevel.INFO)
         {
             if (CurrentSessionFile == null)
-                CurrentSessionFile = $"Logs/{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.txt";
+                CurrentSessionFile = $"Logs/{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log";
 
             if (!Directory.Exists("Logs"))
                 Directory.CreateDirectory("Logs");
-
-            if (writer == null)
-            {
-                writer = new StreamWriter(CurrentSessionFile);
-            }
 
             switch (level)
             {
@@ -64,8 +52,13 @@ namespace MTFBot
 
             string line = $"[{DateTime.Now:yyyy.MM.dd HH:mm:ss}] [{level.ToString()}] {message}\n";
             Console.Write(line);
+
+            using (FileStream stream = new FileStream(CurrentSessionFile, FileMode.Append))
+            {
+                stream.Write(Encoding.UTF8.GetBytes(line), 0, Encoding.UTF8.GetBytes(line).Length);
+            }
+
             Console.ResetColor();
-            writer.Write(line);
         }
     }
 }
