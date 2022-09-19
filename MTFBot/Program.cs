@@ -1,4 +1,5 @@
-﻿using MTFBot.Bot;
+﻿using Microsoft.EntityFrameworkCore;
+using MTFBot.Bot;
 using MTFBot.DB;
 
 namespace MTFBot
@@ -8,7 +9,8 @@ namespace MTFBot
         static async Task Main(string[] args)
         {
             AppDomain.CurrentDomain.ProcessExit += OnExit;
-            SqliteHelper.Open();
+            Database.Start();
+            await Database.Context.Database.MigrateAsync();
 #if SQL
             
 #else
@@ -22,8 +24,8 @@ namespace MTFBot
 
         private static async void OnExit(object sender, EventArgs e)
         {
+            Database.Stop();
             await MTFBot.Bot.Core.Stop();
-            SqliteHelper.Close();
             Log.StopLog();
         }
     }

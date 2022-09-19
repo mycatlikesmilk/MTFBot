@@ -8,8 +8,8 @@ using Discord;
 using Discord.WebSocket;
 using MTFBot.Attributes;
 using MTFBot.DB;
+using MTFBot.Enums;
 using MTFBot.Extensions;
-using MTFBot.Model;
 
 namespace MTFBot.Bot.Commands
 {
@@ -34,7 +34,7 @@ namespace MTFBot.Bot.Commands
                         .AddOption(new SlashCommandOptionBuilder()
                             .WithName("steamid")
                             .WithDescription("Steamid игрока")
-                            .WithType(ApplicationCommandOptionType.String)
+                            .WithType(ApplicationCommandOptionType.Integer)
                             .WithRequired(true))
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("force")
@@ -67,42 +67,53 @@ namespace MTFBot.Bot.Commands
 
         public override async Task Execute(SocketSlashCommand command, SocketGuild guild)
         {
-            var cmdType = command.Data.Options.First().Name;
+            var triggeredUser = command.GetTriggeredUser();
 
-            if (!CheckRoles(guild.GetUser(command.User.Id)))
+            if (!CheckRoles(guild.GetUser(triggeredUser.Id)))
                 await command.RespondAsync(text: "У вас недостаточно прав для выполнения этой команды");
 
-            var user = (SocketUser)command.Data.Options.First().Options.First(x => x.Name == "discord").Value;
+            var subcommand = command.GetSubcommand();
 
-            switch (cmdType)
+            var discordUser = subcommand.GetCommandValue<SocketUser>("discord", null);
+            var steamId = subcommand.GetCommandValue<ulong>("steamid", 0);
+            var forced = subcommand.GetCommandValue<bool>("force", false);
+            var restriction = subcommand.GetCommandValue<bool>("restrict", true);
+
+            var dbUser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == discordUser.Id)
+                         ?? Database.Context.Users.Add(new User(discordUser.Id, steamId)).Entity;
+
+            switch (subcommand.Name)
             {
                 case "add":
-                    var dbUser = SqliteHelper.GetUserInfo(user.Id.ToString());
-                    var forced = (SocketSlashCommandDataOption)command.Data.Options.First().Options.FirstOrDefault(x => x.Name == "force");
+                    if (dbUser.WhitelistState == WhitelistState.WhitelistAllowed)
+                        await command.RespondAsync(text: $"Игрок <@{discordUser.Id}> уже добавлен в Whitelist");
 
-                    if (dbUser.WhitelistState == SqliteHelper.WhitelistState.WhitelistResticted && (forced == null || !((bool)forced.Value)))
-                        await command.RespondAsync($"Игроку <@{user.Id}> запрещено находиться в whitelist. Используйте force - true, чтобы добавить его, обходя это ограничение");
+                    if (dbUser.WhitelistState == WhitelistState.WhitelistRestricted && !forced)
+                        await command.RespondAsync(
+                            $"Игроку <@{discordUser.Id}> запрещено находиться в Whitelist. Используйте force - true, чтобы добавить его, обходя это ограничение");
 
-                    var steamid = (string)command.Data.Options.First().Options.First(x => x.Name == "steamid").Value;
-                    await DiscordHandler.GrantRole(user, Global.Roles.WhitelistAllowed);
-                    SqliteHelper.UpdateWhitelistState(user.Id.ToString(), SqliteHelper.WhitelistState.Whitelist, steamid);
-                    await command.RespondAsync($"Пользователь <@{user.Id}> добавлен в whitelist");
+                    await DiscordHandler.GrantRole(discordUser, Global.Roles.WhitelistAllowed);
+                    dbUser.WhitelistState = WhitelistState.WhitelistAllowed;
+                    await Database.Context.SaveChangesAsync();
+
+                    await command.RespondAsync(text: $"Пользователь <@{discordUser.Id}> добавлен в whitelist");
                     break;
                 case "remove":
-                    var restriction = (SocketSlashCommandDataOption)command.Data.Options.First().Options.FirstOrDefault(x => x.Name == "restrict");
-
-                    if (restriction == null || ((bool)restriction.Value))
+                    if (restriction)
                     {
-                        await DiscordHandler.RemoveRole(user, Global.Roles.WhitelistAllowed);
-                        await DiscordHandler.GrantRole(user, Global.Roles.WhitelistResticted);
-                        SqliteHelper.UpdateWhitelistState(user.Id.ToString(), SqliteHelper.WhitelistState.WhitelistResticted);
+                        await DiscordHandler.RemoveRole(discordUser, Global.Roles.WhitelistAllowed);
+                        await DiscordHandler.GrantRole(discordUser, Global.Roles.WhitelistResticted);
+                        dbUser.WhitelistState = WhitelistState.WhitelistRestricted;
+                        await Database.Context.SaveChangesAsync();
                     }
                     else
                     {
-                        await DiscordHandler.RemoveRole(user, Global.Roles.WhitelistAllowed);
-                        SqliteHelper.UpdateWhitelistState(user.Id.ToString(), SqliteHelper.WhitelistState.NoWhitelist);
+                        await DiscordHandler.RemoveRole(discordUser, Global.Roles.WhitelistAllowed);
+                        dbUser.WhitelistState = WhitelistState.NoWhitelist;
+                        await Database.Context.SaveChangesAsync();
                     }
-                    await command.RespondAsync($"Пользователь <@{user.Id}> выписан из whitelist");
+
+                    await command.RespondAsync(text: $"Пользователь <@{discordUser.Id}> выписан из whitelist");
                     break;
             }
         }

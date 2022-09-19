@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using MTFBot.DB;
 
 namespace MTFBot.Bot.Commands
 {
@@ -31,7 +32,7 @@ namespace MTFBot.Bot.Commands
             var triggeredUser = command.User;
             var steamid = (string)command.Data.Options.First().Value;
 
-            // TODO: add link to DB
+            
 
             await command.RespondAsync($"Пользователь <@{triggeredUser.Id}> успешно привязал свой steamid ({steamid})");
         }

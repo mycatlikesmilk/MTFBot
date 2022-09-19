@@ -34,7 +34,5 @@ namespace MTFBot.Attributes
                 throw ex;
             }
         }
-        
-        //string description = Enumerations.GetEnumDescription((MyEnum)value);
     }
 }
