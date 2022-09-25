@@ -15,6 +15,8 @@ namespace MTFBot
         public static DiscordSocketClient DiscordClient;
         public static string BotToken;
 
+        public static CancellationTokenSource TimerCancellationToken { get; set; }
+
         public static JToken Configuration { get; set; }
 
         public static void Setup()
@@ -53,7 +55,9 @@ namespace MTFBot
             [RoleID("WhitelistAllowed")]
             WhitelistAllowed,
             [RoleID("WhitelistRestricted")]
-            WhitelistResticted
+            WhitelistResticted,
+            [RoleID("Muted")]
+            Muted
         }
     }
 }

@@ -79,9 +79,9 @@ namespace MTFBot
             }
         }
 
-        public static async Task RemoveRole(SocketUser user, Global.Roles role)
+        public static async Task RemoveRole(ulong userid, Global.Roles role)
         {
-            await Guild.GetUser(user.Id).RemoveRoleAsync(RoleIDAttribute.GetRoleId(role));
+            await Guild.GetUser(userid).RemoveRoleAsync(RoleIDAttribute.GetRoleId(role));
         }
     }
 }

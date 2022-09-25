@@ -7,11 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MTFBot.DB
 {
-    public class UsersContext : DbContext
+    public class DatabaseContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<DiscordMute> DiscordMutes { get; set; }
 
-        public UsersContext()
+        public DatabaseContext()
         {
             Database.EnsureCreated();
         }

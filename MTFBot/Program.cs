@@ -24,6 +24,7 @@ namespace MTFBot
 
         private static async void OnExit(object sender, EventArgs e)
         {
+            Global.TimerCancellationToken.Cancel();
             Database.Stop();
             await MTFBot.Bot.Core.Stop();
         }

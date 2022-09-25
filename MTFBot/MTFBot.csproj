@@ -28,4 +28,6 @@
     </None>
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties config_4debug_1json__JsonSchema="https://datahubproject.io/schemas/datahub_ingestion_schema.json" /></VisualStudio></ProjectExtensions>
+
 </Project>

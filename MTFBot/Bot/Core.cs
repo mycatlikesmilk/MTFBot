@@ -15,6 +15,9 @@ namespace MTFBot.Bot
             Log.WriteLine("Запуск бота");
             Global.DiscordClient = new DiscordSocketClient();
 
+            Global.TimerCancellationToken = new CancellationTokenSource();
+            ThreadPool.QueueUserWorkItem(Timer.DoTimer, Global.TimerCancellationToken.Token);
+
             Global.DiscordClient.Ready += OnReady;
             Global.DiscordClient.SlashCommandExecuted += OnSlashCommand; 
 

@@ -110,14 +110,14 @@ namespace MTFBot.Bot.Commands
                 case "remove":
                     if (restriction)
                     {
-                        await DiscordHandler.RemoveRole(discordUser, Global.Roles.WhitelistAllowed);
+                        await DiscordHandler.RemoveRole(discordUser.Id, Global.Roles.WhitelistAllowed);
                         await DiscordHandler.GrantRole(discordUser, Global.Roles.WhitelistResticted);
                         dbUser.WhitelistState = WhitelistState.WhitelistRestricted;
                         await Database.Context.SaveChangesAsync();
                     }
                     else
                     {
-                        await DiscordHandler.RemoveRole(discordUser, Global.Roles.WhitelistAllowed);
+                        await DiscordHandler.RemoveRole(discordUser.Id, Global.Roles.WhitelistAllowed);
                         dbUser.WhitelistState = WhitelistState.NoWhitelist;
                         await Database.Context.SaveChangesAsync();
                     }
