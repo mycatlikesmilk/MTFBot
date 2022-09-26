@@ -14,7 +14,7 @@ namespace MTFBot
     {
         public static DiscordSocketClient DiscordClient;
         public static string BotToken;
-
+        public static bool Ready { get; set; }
         public static CancellationTokenSource TimerCancellationToken { get; set; }
 
         public static JToken Configuration { get; set; }

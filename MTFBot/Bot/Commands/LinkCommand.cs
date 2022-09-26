@@ -14,6 +14,8 @@ namespace MTFBot.Bot.Commands
     {
         public override string Name => "link";
 
+        public override Global.Roles[] Permissions => Array.Empty<Global.Roles>();
+
         public override async Task RegisterCommand(SocketGuild guild)
         {
             await guild.CreateApplicationCommandAsync(
@@ -33,7 +35,7 @@ namespace MTFBot.Bot.Commands
             var triggeredUser = command.GetTriggeredUser();
             var steamid = (ulong)command.GetCommandValue<long>("steamid", 0);
 
-            var dbUser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == triggeredUser.Id);
+            var dbUser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == triggeredUser.Id.ToString());
 
             if (dbUser != null)
             {
@@ -41,7 +43,7 @@ namespace MTFBot.Bot.Commands
                 return;
             }
 
-            Database.Context.Users.Add(new User(triggeredUser.Id, steamid));
+            Database.Context.Users.Add(new User(triggeredUser.Id.ToString(), steamid.ToString()));
             await Database.Context.SaveChangesAsync();
 
             await command.RespondAsync($"Пользователь <@{triggeredUser.Id}> успешно привязал свой steamid ({steamid})");

@@ -18,6 +18,8 @@ namespace MTFBot.Bot.Coroutines
 
         public static void Do()
         {
+            if (!Global.Ready) return;
+
             if (Mutes == null)
                 UpdateMutes();
 

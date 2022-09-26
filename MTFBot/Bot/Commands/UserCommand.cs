@@ -14,6 +14,8 @@ namespace MTFBot.Bot.Commands
     {
         public override string Name => "user";
 
+        public override Global.Roles[] Permissions => Array.Empty<Global.Roles>();
+
         public override async Task RegisterCommand(SocketGuild guild)
         {
             await guild.CreateApplicationCommandAsync(new SlashCommandBuilder()
@@ -50,7 +52,7 @@ namespace MTFBot.Bot.Commands
             {
                 case "discord":
                     {
-                        var dbuser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == user.Id);
+                        var dbuser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == user.Id.ToString());
                         if (dbuser == null)
                         {
                             await command.RespondAsync(text: "Пользователь не найден в базе данных");
@@ -79,7 +81,7 @@ namespace MTFBot.Bot.Commands
                     break;
                 case "steamid":
                     {
-                        var dbuser = Database.Context.Users.FirstOrDefault(x => x.SteamId == steamid);
+                        var dbuser = Database.Context.Users.FirstOrDefault(x => x.SteamId == steamid.ToString());
                         if (dbuser == null)
                         {
                             await command.RespondAsync(text: "Пользователь не найден в базе данных");

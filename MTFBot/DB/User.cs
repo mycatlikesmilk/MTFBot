@@ -12,9 +12,9 @@ namespace MTFBot.DB
     {
         [Key]
         [Required]
-        public ulong DiscordId { get; set; }
+        public string DiscordId { get; set; }
         [Required]
-        public ulong SteamId { get; set; }
+        public string SteamId { get; set; }
         public DateTime LinkDate { get; set; }
         public WhitelistState WhitelistState { get; set; }
 
@@ -23,7 +23,7 @@ namespace MTFBot.DB
 
         }
 
-        public User(ulong discordId, ulong steamId)
+        public User(string discordId, string steamId)
         {
             DiscordId = discordId;
             SteamId = steamId;

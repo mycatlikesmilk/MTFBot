@@ -17,6 +17,8 @@ namespace MTFBot.Bot.Commands
     {
         public override string Name => "whitelist";
 
+        public override Global.Roles[] Permissions { get; }
+
         public override async Task RegisterCommand(SocketGuild guild)
         {
             await guild.CreateApplicationCommandAsync(new SlashCommandBuilder()
@@ -78,7 +80,7 @@ namespace MTFBot.Bot.Commands
             var forced = subcommand.GetCommandValue<bool>("force", false);
             var restriction = subcommand.GetCommandValue<bool>("restrict", true);
 
-            var dbUser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == discordUser.Id);
+            var dbUser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == discordUser.Id.ToString());
             if (dbUser == null)
             {
                 if (steamId == 0)
@@ -86,7 +88,7 @@ namespace MTFBot.Bot.Commands
                     await command.RespondAsync(text: $"Пользователь <@{discordUser.Id}> не найден в базе данных. Укажите SteamID явно, чтобы добавить в базу данных и выдать доступ в Whitelist");
                     return;
                 }
-                dbUser = Database.Context.Users.Add(new User(discordUser.Id, steamId)).Entity;
+                dbUser = Database.Context.Users.Add(new User(discordUser.Id.ToString(), steamId.ToString())).Entity;
             }
 
             await Database.Context.SaveChangesAsync();

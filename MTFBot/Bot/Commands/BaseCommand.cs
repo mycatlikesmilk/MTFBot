@@ -4,25 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using MTFBot.Extensions;
 
 namespace MTFBot.Bot.Commands
 {
     internal abstract class BaseCommand
     {
         public abstract string Name { get; }
-
         public abstract Task RegisterCommand(SocketGuild guild);
 
         public abstract Task Execute(SocketSlashCommand command, SocketGuild guild);
 
-        protected void StartExecute(SocketSlashCommand command)
-        {
-            Log.WriteLine($"Начало выполнения команды {this.GetType().Name}");
-        }
+        public abstract Global.Roles[] Permissions { get; }
 
-        protected void EndExecute(SocketSlashCommand command)
+        protected const string NoAccessResponse = "У вас недостаточно прав для выполнения этой команды";
+
+        protected bool HasAccess(SocketSlashCommand command, SocketGuild guild)
         {
-            Log.WriteLine($"Команда {this.GetType().Name} выполнена успешно", Log.LogLevel.SUCCES);
+            var user = guild.GetUser(command.GetTriggeredUser().Id);
+
+            bool accesDenied = true;
+
+            foreach (var role in Permissions)
+            {
+                if (user.HasRole(role))
+                    accesDenied = false;
+            }
+
+            if (accesDenied)
+                command.RespondAsync(text: NoAccessResponse);
+
+            return !accesDenied;
         }
     }
 }

@@ -14,6 +14,13 @@ namespace MTFBot.Bot.Commands
     {
         public override string Name => "relink";
 
+        public override Global.Roles[] Permissions => new[]
+        {
+            Global.Roles.Administration,
+            Global.Roles.Moderation,
+            Global.Roles.WhitelistAllower
+        };
+
         public override async Task RegisterCommand(SocketGuild guild)
         {
             await guild.CreateApplicationCommandAsync(new SlashCommandBuilder()
@@ -35,32 +42,23 @@ namespace MTFBot.Bot.Commands
 
         public override async Task Execute(SocketSlashCommand command, SocketGuild guild)
         {
-            var triggeredUser = command.GetTriggeredUser();
-            if (!CheckRoles(guild.GetUser(triggeredUser.Id)))
-                await command.RespondAsync(text: "У вас недостаточно прав для выполнения этой команды");
+            if (!base.HasAccess(command, guild)) return;
 
             var user = command.GetCommandValue<SocketUser>("discord", null);
             var steamid = (ulong)command.GetCommandValue<long>("steamid", 0);
 
-            var dbuser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == user.Id);
+            var dbuser = Database.Context.Users.FirstOrDefault(x => x.DiscordId == user.Id.ToString());
             if (dbuser == null)
             {
-                dbuser = Database.Context.Users.Add(new User(user.Id, steamid)).Entity;
+                dbuser = Database.Context.Users.Add(new User(user.Id.ToString(), steamid.ToString())).Entity;
                 await Database.Context.SaveChangesAsync();
                 await command.RespondAsync(text: $"Пользователь <@{user.Id}> не найден. Связь создана ({steamid})");
                 return;
             }
 
-            dbuser.SteamId = steamid;
+            dbuser.SteamId = steamid.ToString();
             await Database.Context.SaveChangesAsync();
             await command.RespondAsync(text: $"Перепривязка успешно выполнена (<@{user.Id}> {steamid})");
-        }
-
-        private bool CheckRoles(SocketGuildUser user)
-        {
-            return (user.HasRole(Global.Roles.Administration) ||
-                    user.HasRole(Global.Roles.Moderation) ||
-                    user.HasRole(Global.Roles.WhitelistAllower));
         }
     }
 }

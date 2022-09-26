@@ -42,6 +42,7 @@ namespace MTFBot.Bot
         private static async Task OnReady()
         {
             await DiscordHandler.Initialize();
+            Global.Ready = true;
         }
 
         private static async Task OnSlashCommand(SocketSlashCommand arg)

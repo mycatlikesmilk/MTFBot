@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using MTFBot.Bot.Coroutines;
 using MTFBot.DB;
 using MTFBot.Extensions;
 
@@ -14,6 +15,9 @@ namespace MTFBot.Bot.Commands
     internal class MuteCommand : BaseCommand
     {
         public override string Name => "mute";
+
+        public override Global.Roles[] Permissions => new[] { Global.Roles.Administration, Global.Roles.Moderation };
+
         public override async Task RegisterCommand(SocketGuild guild)
         {
             await guild.CreateApplicationCommandAsync(new SlashCommandBuilder()
@@ -42,10 +46,7 @@ namespace MTFBot.Bot.Commands
 
         public override async Task Execute(SocketSlashCommand command, SocketGuild guild)
         {
-            var triggeredUser = command.GetTriggeredUser();
-
-            if (!CheckRoles(guild.GetUser(triggeredUser.Id)))
-                await command.RespondAsync(text: "У вас недостаточно прав для выполнения этой команды");
+            if (!base.HasAccess(command, guild)) return;
 
             var discordUser = command.GetCommandValue<SocketUser>("user", null);
             var duration = command.GetCommandValue<string>("duration", null);
@@ -85,11 +86,12 @@ namespace MTFBot.Bot.Commands
                 Reason = reason
             };
             Database.Context.DiscordMutes.Add(mute);
+            await Database.Context.SaveChangesAsync();
+            MuteChecker.UpdateMutes();
             await DiscordHandler.GrantRole(discordUser, Global.Roles.Muted);
 
             await command.RespondAsync(text: $"Пользователь <@{discordUser.Id}> получил мьют до {mute.MutedTo:yyyy.MM.dd HH:mm:ss}");
         }
-
 
         private bool CheckRoles(SocketGuildUser user)
         {
